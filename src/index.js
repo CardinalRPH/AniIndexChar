@@ -5,6 +5,7 @@ import './icon/mylogo.png';
 import './icon/mal.png';
 import './icon/favicon.ico';
 import './icon/favicon.png';
+import './icon/404.jpg';
 import '@fortawesome/fontawesome-free/js/fontawesome';
 import '@fortawesome/fontawesome-free/js/solid';
 import '@fortawesome/fontawesome-free/js/regular';

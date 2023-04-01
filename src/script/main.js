@@ -172,6 +172,9 @@ const modal_filler = (data, index) => {
     if ((data.data.length != 0) || (data.data.length != null) || (data.data.length != "")) {
         is_pict_loading();
         anime_pict.setAttribute('src', data.data[0].anime.images.jpg.image_url);
+    } else {
+        is_pict_loading();
+        anime_pict.setAttribute('src', './public/icons/404.jpg');
     }
 
     anime_is_sel();

@@ -19,7 +19,7 @@ module.exports = {
                     }
                 ]
             }, {
-                test: /\.(jpe?g|png|gif|svg|ico)$/i,
+                test: /\.(jpe?g|png|gif|svg|ico|jpg)$/i,
                 loader: 'file-loader',
                 options: {
                     name: '/public/icons/[name].[ext]'
