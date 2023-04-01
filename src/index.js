@@ -11,6 +11,7 @@ import '@fortawesome/fontawesome-free/js/solid';
 import '@fortawesome/fontawesome-free/js/regular';
 import '@fortawesome/fontawesome-free/js/brands';
 import 'jquery/dist/jquery.min.js';
-import './script/API/data.js'
+import './script/API/data.js';
+import './script/error_handle.js';
 import './script/main.js';
 import './script/elements/result-content.js';

@@ -28,7 +28,7 @@ const anime_pict_ready = document.getElementById("the-anime-pict");
 const modal_btn = document.getElementById("modal-btn-close");
 
 
-// import { f_data, f_data_anime } from './API/data.js';
+import ErrorHandler from './error_handle.js';
 import { fetch_data, fetch_data_anime } from './API/data.js';
 
 let mdata = [];
@@ -79,6 +79,8 @@ const f_data = (query) => {
             is_null();
         }
     }).catch((error) => {
+        let cuserror = new ErrorHandler("Api can't Load Character Query");
+        throw cuserror;
         console.log(error)
     });
 }
@@ -116,7 +118,10 @@ const f_data_anime = (index) => {
             modal_blank();
         }
     }).catch(function (error) {
+        let cuserror = new ErrorHandler("Api can't Load Anime of Character");
+        throw cuserror;
         console.log(error);
+        
     });
 }
 
