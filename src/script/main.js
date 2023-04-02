@@ -72,7 +72,7 @@ modal_btn.addEventListener("click", () => {
 
 const f_data = (query) => {
     fetch_data(query).then((data) => {
-        if (data.data != "") {
+        if ((data.data != "") || (data.data != null)) {
             mdata = data;
             builder_char(data)
         } else {
@@ -111,16 +111,18 @@ window.is_pict_ready = () => {
 
 const f_data_anime = (index) => {
     fetch_data_anime(index, mdata).then((data) => {
-        if (data.data != "") {
+        if (data.data != null) {
             mdataanime = data;
             modal_filler(data, index);
         } else {
             modal_blank();
         }
     }).catch(function (error) {
+        is_pict_loading();
+        anime_pict.setAttribute('src', './public/icons/404.jpg');
+        console.log(error);
         let cuserror = new ErrorHandler("Api can't Load Anime of Character");
         throw cuserror;
-        console.log(error);
         
     });
 }
