@@ -13,11 +13,11 @@ const fetch_data = (query) => {
 
 const fetch_data_anime = (index, mdata) => {
     return new Promise((resolve, reject) => {
-        fetch(`https://api.jikan.moe/v4/characters/${mdata.data[index].mal_id}/anime`).then(function (response) {
+        fetch(`https://api.jikan.moe/v4/characters/${mdata.data[index].mal_id}/anime`).then( (response) => {
             return response.json();
-        }).then(function (data) {
+        }).then((data) => {
             resolve(data);
-        }).catch(function (error) {
+        }).catch((error) => {
             reject(error);
         });
     });

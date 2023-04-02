@@ -79,9 +79,9 @@ const f_data = (query) => {
             is_null();
         }
     }).catch((error) => {
+        console.log(error);
         let cuserror = new ErrorHandler("Api can't Load Character Query");
         throw cuserror;
-        console.log(error)
     });
 }
 
@@ -117,7 +117,7 @@ const f_data_anime = (index) => {
         } else {
             modal_blank();
         }
-    }).catch(function (error) {
+    }).catch( (error) => {
         is_pict_loading();
         anime_pict.setAttribute('src', './public/icons/404.jpg');
         console.log(error);
@@ -137,11 +137,11 @@ const builder_char = (data) => {
 const modal_filler = (data, index) => {
     is_modal_content();
     if (((mdata.data[index].name != null) || (mdata.data[index].name != "")) && ((mdata.data[index].name_kanji == null) || (mdata.data[index].name_kanji == ""))) {
-        modal_title.innerHTML = mdata.data[index].name + " | ...";
+        modal_title.innerHTML =  `${mdata.data[index].name} | ...`;
     } else if (((mdata.data[index].name == null) || (mdata.data[index].name == "")) && ((mdata.data[index].name_kanji != null) || (mdata.data[index].name_kanji != ""))) {
-        modal_title.innerHTML = "... | " + mdata.data[index].name_kanji;
+        modal_title.innerHTML = `... | ${mdata.data[index].name_kanji}`;
     } else {
-        modal_title.innerHTML = mdata.data[index].name + " | " + mdata.data[index].name_kanji;
+        modal_title.innerHTML = `${mdata.data[index].name} | ${mdata.data[index].name_kanji}`;
     }
     char_pict.setAttribute('src', mdata.data[index].images.jpg.image_url);
     mal_link.setAttribute('href', mdata.data[index].url);
@@ -170,9 +170,9 @@ const modal_filler = (data, index) => {
         about_char.innerHTML = "<h4>About :</h4> ...";
     } else {
         if ((mdata.data[index].about).includes("\n")) {
-            about_char.innerHTML = "<h4>About :</h4>" + replacer(mdata.data[index].about);
+            about_char.innerHTML = `<h4>About :</h4>${replacer(mdata.data[index].about)}`;
         } else {
-            about_char.innerHTML = "<h4>About :</h4>" + mdata.data[index].about;
+            about_char.innerHTML = `<h4>About :</h4> ${mdata.data[index].about}`;
         }
     }
 
