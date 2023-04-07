@@ -1,8 +1,12 @@
+const nav_logos = document.getElementById("nav-logos");
+const myque = document.getElementById("myque");
+
 //Widget check
 const blank_search = document.getElementById("blank-search");
 const null_search = document.getElementById("null-search");
 const the_content = document.getElementById("the-content");
 const laoding_p = document.getElementById("loading-p");
+const recent_c = document.getElementById("recent-content");
 
 //Search COntainer
 const search_contain = document.getElementById("search-input-id");
@@ -27,18 +31,51 @@ const anime_pict_ready = document.getElementById("the-anime-pict");
 
 const modal_btn = document.getElementById("modal-btn-close");
 
+document.getElementById("mygithub").addEventListener('click', () => {
+    location.href = "https://github.com/CardinalRPH";
+});
+document.getElementById("apiref").addEventListener('click', () => {
+    location.href = "https://docs.api.jikan.moe/";
+});
+
 
 import ErrorHandler from './error_handle.js';
-import { fetch_data, fetch_data_anime } from './API/data.js';
+import { fetch_data, fetch_data_anime, fetch_data_by_id } from './API/data.js';
 
 let mdata = [];
 let mdataanime = [];
+let storagedata = [];
+let index_data = 0;
+const storage_key = "recent_data";
+const index_storage = "index_data";
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (blank_search.style.display == "none") {
+    is_loading();
+    if (isStorageExist()) {
+        if (localStorage.getItem(storage_key) != null) {
+            if (localStorage.getItem(storage_key) != "") {
+                storagedata = JSON.parse(localStorage.getItem(storage_key));
+                index_data = JSON.parse(localStorage.getItem(index_storage));
+                is_recent();
+                builder_char_recent();
+            } else {
+                is_blank();
+            }
+        } else {
+            is_blank();
+            localStorage.setItem(storage_key, "");
+            localStorage.setItem(index_storage, 0);
+        }
+    } else {
         is_blank();
     }
 });
+
+nav_logos.addEventListener('click', () => {
+    is_loading();
+    is_recent();
+    builder_char_recent();
+})
 
 search_contain.addEventListener("keypress", (event) => {
     if (event.key === "Enter") {
@@ -49,6 +86,7 @@ search_contain.addEventListener("keypress", (event) => {
         } else {
             // code here for the result
             mdata = [];
+            myque.innerHTML = `Results for "${search_contain.value}"`;
             f_data(search_contain.value);
         }
     }
@@ -62,6 +100,7 @@ search_btn.addEventListener("click", () => {
     } else {
         // code here for the result
         mdata = [];
+        myque.innerHTML = `Results for "${search_contain.value}"`;
         f_data(search_contain.value);
     }
 });
@@ -72,7 +111,7 @@ modal_btn.addEventListener("click", () => {
 
 const f_data = (query) => {
     fetch_data(query).then((data) => {
-        if ((data.data != "") || (data.data != null)) {
+        if (data.data.length !=0) {
             mdata = data;
             builder_char(data)
         } else {
@@ -88,12 +127,18 @@ const f_data = (query) => {
 window.selected = (index) => {
     is_modal_loading();
     f_data_anime(index);
+    push_local(index);
 }
 
 window.onclick = (event) => {
     if (event.target == mymodal) {
         modal_blank();
     }
+}
+
+window.selected_recent = (index) => {
+    is_modal_loading();
+    f_data_by_id(index);
 }
 
 window.anime_title_bg = (index, el) => {
@@ -110,7 +155,7 @@ window.is_pict_ready = () => {
 }
 
 const f_data_anime = (index) => {
-    fetch_data_anime(index, mdata).then((data) => {
+    fetch_data_anime(mdata.data[index].mal_id).then((data) => {
         if (data.data != null) {
             mdataanime = data;
             modal_filler(data, index);
@@ -135,16 +180,33 @@ const builder_char = (data) => {
 }
 
 const modal_filler = (data, index) => {
-    is_modal_content();
-    if (((mdata.data[index].name != null) || (mdata.data[index].name != "")) && ((mdata.data[index].name_kanji == null) || (mdata.data[index].name_kanji == ""))) {
-        modal_title.innerHTML =  `${mdata.data[index].name} | ...`;
-    } else if (((mdata.data[index].name == null) || (mdata.data[index].name == "")) && ((mdata.data[index].name_kanji != null) || (mdata.data[index].name_kanji != ""))) {
-        modal_title.innerHTML = `... | ${mdata.data[index].name_kanji}`;
+    let name, name_kanji, char_img, mal_url, char_nick, char_about;
+
+    if (Array.isArray(mdata.data)) {
+        name = mdata.data[index].name;
+        name_kanji = mdata.data[index].name_kanji;
+        char_img = mdata.data[index].images.jpg.image_url;
+        mal_url = mdata.data[index].url;
+        char_nick = mdata.data[index].nicknames;
+        char_about = mdata.data[index].about;
     } else {
-        modal_title.innerHTML = `${mdata.data[index].name} | ${mdata.data[index].name_kanji}`;
+        name = mdata.data.name;
+        name_kanji = mdata.data.name_kanji;
+        char_img = mdata.data.images.jpg.image_url;
+        mal_url = mdata.data.url;
+        char_nick = mdata.data.nicknames;
+        char_about = mdata.data.about;
     }
-    char_pict.setAttribute('src', mdata.data[index].images.jpg.image_url);
-    mal_link.setAttribute('href', mdata.data[index].url);
+    is_modal_content();
+    if (((name != null) || (name != "")) && ((name_kanji == null) || (name_kanji == ""))) {
+        modal_title.innerHTML =  `${name} | ...`;
+    } else if (((name == null) || (name == "")) && ((name_kanji != null) || (name_kanji != ""))) {
+        modal_title.innerHTML = `... | ${name_kanji}`;
+    } else {
+        modal_title.innerHTML = `${name} | ${name_kanji}`;
+    }
+    char_pict.setAttribute('src', char_img);
+    mal_link.setAttribute('href', mal_url);
 
     if ((data.data == null) || (data.data == "")) {
         anime_name.innerHTML += `<li class="text-truncate anime-text-title" title="???"><h3>???</h3></li>`;
@@ -158,21 +220,21 @@ const modal_filler = (data, index) => {
         }
     }
 
-    if (mdata.data[index].nicknames.length > 0) {
-        for (let i = 0; i < mdata.data[index].nicknames.length; i++) {
-            nick_name.innerHTML += `<li class="text-truncate">${mdata.data[index].nicknames[i]}</li>`;
+    if (char_nick.length > 0) {
+        for (let i = 0; i < char_nick.length; i++) {
+            nick_name.innerHTML += `<li class="text-truncate">${char_nick[i]}</li>`;
         }
     } else {
         nick_name.innerHTML += `<li class="text-truncate">...</li>`;
     }
 
-    if ((mdata.data[index].about == null) || (mdata.data[index].about == "")) {
+    if ((char_about == null) || (char_about == "")) {
         about_char.innerHTML = "<h4>About :</h4> ...";
     } else {
-        if ((mdata.data[index].about).includes("\n")) {
-            about_char.innerHTML = `<h4>About :</h4>${replacer(mdata.data[index].about)}`;
+        if ((char_about).includes("\n")) {
+            about_char.innerHTML = `<h4>About :</h4>${replacer(char_about)}`;
         } else {
-            about_char.innerHTML = `<h4>About :</h4> ${mdata.data[index].about}`;
+            about_char.innerHTML = `<h4>About :</h4> ${char_about}`;
         }
     }
 
@@ -214,6 +276,8 @@ const is_blank = () => {
     null_search.style.display = "none";
     the_content.style.display = "none";
     laoding_p.style.display = "none";
+    recent_c.style.display = "none";
+    recent_c.innerHTML = "";
     the_content.innerHTML - "";
     modal_blank();
 }
@@ -223,6 +287,8 @@ const is_null = () => {
     blank_search.style.display = "none";
     null_search.style.display = "flex";
     the_content.style.display = "none";
+    recent_c.style.display = "none";
+    recent_c.innerHTML = "";
     the_content.innerHTML = "";
     modal_blank();
 }
@@ -232,6 +298,8 @@ const is_content = () => {
     null_search.style.display = "none";
     the_content.style.display = "grid";
     laoding_p.style.display = "none";
+    recent_c.style.display = "none";
+    recent_c.innerHTML = "";
     the_content.innerHTML = "";
 }
 
@@ -240,6 +308,19 @@ const is_loading = () => {
     null_search.style.display = "none";
     the_content.style.display = "none";
     laoding_p.style.display = "flex";
+    recent_c.style.display = "none";
+    recent_c.innerHTML = "";
+    the_content.innerHTML = "";
+}
+
+const is_recent = () => {
+    myque.innerHTML = "Recent Search";
+    blank_search.style.display = "none";
+    null_search.style.display = "none";
+    the_content.style.display = "none";
+    laoding_p.style.display = "none";
+    recent_c.style.display = "grid";
+    recent_c.innerHTML = "";
     the_content.innerHTML = "";
 }
 
@@ -267,6 +348,99 @@ const is_pict_loading = () => {
     anime_pict_load.style.display = "flex"
     anime_pict_ready.style.display = "none";
 }
+
+const isStorageExist = () =>  {
+    if (typeof (Storage) === undefined) {
+        return false;
+    }
+    return true;
+}
+
+const generateObject = (id_char, link_pict, name_char) => {
+    return {
+        id_char, link_pict, name_char
+    }
+}
+
+const push_local = (index) => {
+    if (storagedata.length <= 4) {
+        if (!check_object(index)) {
+            let DataObj = generateObject(mdata.data[index].mal_id, mdata.data[index].images.jpg.image_url, mdata.data[index].name);
+            storagedata[index_data] = DataObj;
+            index_data++;
+            if (index_data >= 4) {
+                index_data = 0;
+                saveIndex();
+            } else {
+                saveIndex();
+            }
+            saveData();
+        }
+    }
+}
+
+const saveData = () => {
+    let parse = JSON.stringify(storagedata);
+    localStorage.setItem(storage_key, parse);
+}
+
+const saveIndex = () => {
+    let parse = JSON.stringify(index_data);
+    localStorage.setItem(index_storage, parse)
+}
+
+const check_object = (index) => {
+    for (let i in storagedata) {
+        if (storagedata[i].id_char === mdata.data[index].mal_id) {
+            return true;
+        }
+    }
+}
+
+const builder_char_recent = () => {
+    for (let i in storagedata) {
+        recent_c.innerHTML += `<result-content src="${storagedata[i].link_pict}" onclick="selected_recent(${i})" charname="${storagedata[i].name_char}"></result-content>`;
+    }
+}
+
+const f_data_by_id = (index) => {
+    fetch_data_by_id(storagedata[index].id_char).then((data) => {
+        if (data.data != null) {
+            mdata = data;
+            f_data_by_id_anime(index);
+        } else {
+            modal_blank();
+        }
+    }).catch( (error) => {
+        is_pict_loading();
+        char_pict.setAttribute('src', './public/icons/404.jpg');
+        console.log(error);
+        let cuserror = new ErrorHandler("Api can't Load Character of Anime");
+        throw cuserror;
+        
+    });
+}
+
+const f_data_by_id_anime = (index) => {
+    fetch_data_anime(storagedata[index].id_char).then((data) => {
+        if (data.data != null) {
+            modal_filler(data, 0);
+        } else {
+            modal_blank();
+        }
+    }).catch( (error) => {
+        is_pict_loading();
+        anime_pict.setAttribute('src', './public/icons/404.jpg');
+        console.log(error);
+        let cuserror = new ErrorHandler("Api can't Load Anime of Character");
+        throw cuserror;
+        
+    });
+}
+
+
+
+
 
 
 

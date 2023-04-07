@@ -32,17 +32,10 @@ body {
     grid-template-columns: auto auto !important;
   }
 
-  .main-footer {
-    flex-direction: column !important;
-  }
-
   .img-logo {
     width: 100% !important;
   }
- 
-  .footer-text {
-    width: 100% !important;
-  }
+
 }
 
 @media only screen and (max-width:565px) {
@@ -109,7 +102,7 @@ a:link {
   text-decoration: none;
 }
 
-.the-title-text {
+.the-title {
   color: rgba(17, 22, 29, 1);
 }
 
@@ -212,3 +205,26 @@ footer {
   height: 350px;
   width: 225px;
 }
+
+#nav-logos {
+  height: 150px;
+  cursor: pointer;
+}
+
+.mybtn-lg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  width: 50px;
+  font-size: 25px;
+}
+
+.footer-text {
+  background-color: rgba(14, 19, 42, 0.622);
+}
+
+.myque {
+  color: #5D6D7A;
+}
+

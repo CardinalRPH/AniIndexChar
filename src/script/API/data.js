@@ -11,9 +11,9 @@ const fetch_data = (query) => {
 }
 
 
-const fetch_data_anime = (index, mdata) => {
+const fetch_data_anime = (mdata_id) => {
     return new Promise((resolve, reject) => {
-        fetch(`https://api.jikan.moe/v4/characters/${mdata.data[index].mal_id}/anime`).then( (response) => {
+        fetch(`https://api.jikan.moe/v4/characters/${mdata_id}/anime`).then( (response) => {
             return response.json();
         }).then((data) => {
             resolve(data);
@@ -23,4 +23,16 @@ const fetch_data_anime = (index, mdata) => {
     });
 }
 
-export { fetch_data, fetch_data_anime };
+const fetch_data_by_id = (data_id) => {
+    return new Promise((resolve, reject) => {
+        fetch(`https://api.jikan.moe/v4/characters/${data_id}`).then( (response) => {
+            return response.json();
+        }).then((data) => {
+            resolve(data);
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
+
+export { fetch_data, fetch_data_anime, fetch_data_by_id };
