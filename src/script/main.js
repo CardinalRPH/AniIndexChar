@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 nav_logos.addEventListener('click', () => {
     is_loading();
+    search_contain.value = "";
     is_recent();
     builder_char_recent();
 })
